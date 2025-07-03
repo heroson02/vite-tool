@@ -2,6 +2,7 @@ import './style.css'
 import { data } from './data';
 import { renderMemo } from './card';
 import {handleDragStart, handleDragOver, handleDragEnd} from './handler.ts'
+import { supabase } from './supabase/supabase.ts';
 
 export const main = document.querySelector('main') as HTMLElement;
 
@@ -20,3 +21,5 @@ window.addEventListener('DOMContentLoaded',()=>{
 main.addEventListener('dragstart',handleDragStart);
 main.addEventListener('dragover',handleDragOver);
 main.addEventListener('dragend',handleDragEnd);
+
+console.log(supabase);
