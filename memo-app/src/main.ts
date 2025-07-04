@@ -1,17 +1,23 @@
 import './style.css'
-import { data } from './data';
 import { renderMemo } from './card';
-import {handleDragStart, handleDragOver, handleDragEnd} from './handler.ts'
+import {handleDragStart, handleDragOver, handleDragEnd, handleDelete, handleOpenpop, handleClosepop, handleCreate} from './handler.ts'
 import { supabase } from './supabase/supabase.ts';
 
 export const main = document.querySelector('main') as HTMLElement;
+const create = document.querySelector('.create') as HTMLButtonElement;
+const done = document.querySelector('.done') as HTMLButtonElement;
+const close = document.querySelector('.close') as HTMLButtonElement;
 
 //fetchMemo 사용하기
 
-export function fetchMemo(){
-	data.forEach(data => {
-		renderMemo(main, data);
-	});
+export async function fetchMemo(){
+	const {data} = await supabase.from('memo').select();
+
+	main.innerHTML = '';
+
+	data && data.forEach((d) =>{
+		renderMemo(main, d);
+	})
 }
 
 window.addEventListener('DOMContentLoaded',()=>{
@@ -21,5 +27,8 @@ window.addEventListener('DOMContentLoaded',()=>{
 main.addEventListener('dragstart',handleDragStart);
 main.addEventListener('dragover',handleDragOver);
 main.addEventListener('dragend',handleDragEnd);
+main.addEventListener('click',handleDelete);
 
-console.log(supabase);
+create.addEventListener('click', handleOpenpop);
+close.addEventListener('click', handleClosepop);
+done.addEventListener('click', handleCreate);

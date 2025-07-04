@@ -1,2 +1,5 @@
 .private
 .env
+memo-app/src/.private.md
+memo-app/src/.env
+memo-app/src/supabase/supabase.ts

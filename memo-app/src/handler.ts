@@ -1,4 +1,8 @@
-import { main } from "./main";
+import gsap from "gsap";
+import { fetchMemo, main } from "./main";
+import { supabase } from "./supabase/supabase";
+import { insertMemo } from "./service";
+import type { Tables } from "./supabase/database.types";
 
 let draggingEl : HTMLElement | null = null;
 
@@ -49,4 +53,53 @@ function getDragAfterElement(container:HTMLElement,y:number):HTMLElement | null{
       return closest;
     }
   },{offset: -Infinity, element: null as HTMLElement | null}).element;
+}
+
+export async function handleDelete(e : MouseEvent){
+	const target = e.target as HTMLElement;
+	const btn = target.closest('button');
+	const article = target.closest('article');
+
+	if (!(article && btn))
+		return ;
+	if (confirm("정말 삭제하시겠습니까?"))
+		deleteMemo(+article.dataset.id!);
+}
+
+async function deleteMemo(id : number)
+{
+	console.log(await supabase.from('memo').delete().eq('id', id).select(), ' 삭제 완료');
+	fetchMemo();
+}
+
+export function handleOpenpop(){
+	console.log('popUpBtn');
+	const tl = gsap.timeline()
+	.to('#dialog', {autoAlpha : 1, duration:0.2})
+	.to('.pop', {y:0, ease:'power3.inOut'});
+	console.log('clicked');
+}
+export function handleClosepop(){
+	console.log('closeBtn');
+	
+	const tl = gsap.timeline()
+	.to('.pop', {y:'100%', ease:'power3.inOut'})
+	.to('#dialog', {autoAlpha : 0, duration:0.2});
+}
+export function handleCreate(e:MouseEvent){
+	e.preventDefault();
+	
+	const title = document.querySelector('#title') as HTMLInputElement;
+	const description = document.querySelector('#description') as HTMLInputElement;
+	const priority = document.querySelector('#priority') as HTMLSelectElement;
+
+	insertMemo({
+		title : title.value,
+		description : description.value,
+		priority : priority.value as Tables<'memo'>['priority']
+	})
+
+	title.value = '';
+	description.value = '';
+	priority.value = '';
 }
